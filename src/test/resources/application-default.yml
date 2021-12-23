@@ -1,0 +1,89 @@
+spring.redis:
+  host: localhost
+  port: 6370
+security:
+  oauth2:
+    client:
+      grant-type: client_credentials
+      scope: uaa.resource
+      access-token-uri: http://localhost:8181/oauth/token
+
+spring:
+  flyway:
+    init-sqls: CREATE SCHEMA IF NOT EXISTS chaps_outbound;
+  jpa:
+    show-sql: true
+  activemq:
+    in-memory: true
+    packages.trust-all: true
+    pool.enabled: true
+
+ibm.mq.chaps.outbound.queueName:
+  copeAck: CHAPS_PH_COPEACK_OUT
+  mt900: CHAPS_PH_MT900_OUT
+  swiftAck: CHAPS_PH_SWIFTACK_OUT
+  mt103: CHAPS_PH_MT_OUT
+
+dev.jwt.token: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkludGVybmV0X1JTMjU2In0.eyJpc3MiOiJJbnRlcm5ldCIsInN1YiI6IjZmNTU0MzFkLTkxYmMtNGJjYS1hNjBiLTVhMjMxOGQ0N2FkMCIsImF1ZCI6InBheW1lbnRzLWh1YiIsIm5iZiI6MTUwNzYyNjQxMCwiZXhwIjoxNjY1MzA2NDEwLCJpYXQiOjE1MDc2MjY0MTAsImp0aSI6Ijc5N2ViYjU2LWUxZmMtNGFmMC1hZjQ3LTdjZGEwZGE4MDcyYiJ9.U-shD4Fu7Ceq4tmdgYrXkvM5WvHcHUM4CVIzeHDw6nnSHUh-Ft6mFFNGNTCHF_Z7qz0yWhM6Pcml48t09vD69EJHZ60hhYOcnvQZC6SlHyCXxrEnkQ8YjZ2oQS_rhINEemcCkIVT-63hx1FN5M34DhSiPpXhJW4ihKnnQ8gaDp0xcexCnPy99Z-Kih67y7zXp7hUh2H6e_-P7h_BO8kUjIxSLCzX2rt6491AQGQADwKPGGlQYbJcaYjfj6C1qoLQkjxugqrJYVEgdnRQkQ6Sc_DRixYB9G8X8u-EEfWPMAr5jPx6GE1Ivu0VmOVzBjBZvRerG1GoLshrfRNdmSVq7Q"
+
+vcap.services.chaps-service-config.credentials:
+  api:
+    clientConfigService.uri: http://localhost:${wiremock.port}
+    outbound_response_receiver.uri: http://localhost:${wiremock.port}/api/chaps/outbound-response-receiver
+    calculateFeesService.uri: http://localhost:${wiremock.port}/api/swift-structural/serenity
+    app-service-accounts.uri: http://localhost:${wiremock.port}/api/sc/accounts/payHub
+    sortcodeService.uri: http://localhost:${wiremock.port}/api/sc/sortcodes
+    swift-structural.uri: http://localhost:${wiremock.port}
+    ssi.uri: http://localhost:${wiremock.port}/
+  schemeHoursStartAt: '07:00'
+  schemeHoursEndAt: '16:30'
+  schemeHours.cron-schedule: '0 30 08 ? * MON-FRI'
+  rabbitmq.jms.enabled: true
+  ibm.mq.active: false
+  masterData.calendarService.uri: http://localhost:8181
+  block1BicFi: ABBYGB20
+
+vcap.services.payments-registry-properties.credentials:
+  feign.base-path: http://localhost:${wiremock.port}/
+
+#payment hub account in cope, where money is taken to pay outbound
+payhub.account.in.cope: 10400400
+
+wiremock.port: 8181
+
+vcap:
+  services:
+    falcon-rabbit:
+      credentials:
+        protocols:
+          amqp:
+            host: localhost
+            port: 5672
+            username: guest
+            password: guest
+            vhost: /
+
+accounting.retry:
+  period: 10
+  maxPeriod: 15
+  maxAttempts: 3
+
+sortcodeApi.retry:
+  period: 10
+  maxPeriod: 50
+  maxAttempts: 3
+
+ssi.retry:
+  period: 10
+  maxPeriod: 50
+  maxAttempts: 3
+  
+swift-structural-data-feign:
+  retry:
+    period: 1
+    maxPeriod: 10
+    maxAttempts: 3
+
+lombok:
+  anyConstructor:
+    addConstructorProperties: true
