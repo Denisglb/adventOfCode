@@ -13,4 +13,13 @@ public class AccessData {
         String data = new String(Files.readAllBytes(path));
         return data.split("\n");
     }
+
+
+    public static String[] readDataDay4(String pathName) throws IOException {
+        Path path = new ClassPathResource(pathName).getFile().toPath();
+        String data = new String(Files.readAllBytes(path));
+        return data.split("\n");
+    }
+    
+    
 }
